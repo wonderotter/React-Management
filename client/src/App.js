@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+//import axios from "axios";
 import Customer from "./components/Customer";
 
 import { withStyles } from "@material-ui/core/styles";
@@ -9,34 +10,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-
-const customers = [
-	{
-		id: 1,
-		image: "https://placeimg.com/70/70/1",
-		name: "장희유",
-		birthday: "940302",
-		gender: "여",
-		job: "웹 개발자",
-	},
-	{
-		id: 2,
-		image:
-			"https://pbs.twimg.com/profile_images/2961595463/e18d502130376d14763c7c522d307f75_400x400.jpeg",
-		name: "히컵",
-		birthday: "140305",
-		gender: "남",
-		job: "족장",
-	},
-	{
-		id: 3,
-		image: "https://t1.daumcdn.net/cfile/tistory/22E37E335980311234",
-		name: "강하늘",
-		birthday: "900221",
-		gender: "남",
-		job: "배우",
-	},
-];
 
 const styles = theme => ({
 	root: {
@@ -50,8 +23,27 @@ const styles = theme => ({
 });
 
 class App extends React.Component {
+	state = {
+		customers: "",
+	};
+
+	componentDidMount() {
+		this.callApi()
+			.then(res => this.setState({ customers: res }))
+			.catch(err => console.log(err));
+	}
+
+	callApi = async () => {
+		const response = await fetch("/api/customers")
+		.then(res => res.json())
+		.catch(err => console.log(err));
+		
+		return response;
+	};
+
 	render() {
 		const { classes } = this.props;
+
 		return (
 			<Paper className={classes.root}>
 				<Table className={classes.table}>
@@ -66,7 +58,7 @@ class App extends React.Component {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{customers.map(el => {
+						{this.state.customers ? this.state.customers.map(el => {
 							return (
 								<Customer
 									key={el.id}
@@ -78,7 +70,7 @@ class App extends React.Component {
 									job={el.job}
 								/>
 							);
-						})}
+						}) : "" }
 					</TableBody>
 				</Table>
 			</Paper>
